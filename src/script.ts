@@ -41,24 +41,37 @@ const shipFactory = (position: Array<string>, length: number, name: ShipName, is
 const gameBoardFactory = () => {
 
   const createBoard = (grid: number) => {
-
-
-
+    // Create board DOM
     const boardContainer = document.createElement('div');
     boardContainer.classList.add('grid-container')
     boardContainer.style.gridTemplateColumns = `repeat(${grid}, auto)`
 
-    let i = 0;
-    while (i < grid*grid) {
+    for (let i = 0; i < grid*grid; i++) {
       let boardSquare = document.createElement('div');
       boardSquare.classList.add('grid-child')
-      boardSquare.setAttribute('id', `${i}`)
       boardContainer.appendChild(boardSquare)
       if ((i+1) % grid == 0) {
         boardSquare.style.backgroundColor = "red"
-        // Here needs to add the code to include the letters in the header
       }
-      i++
+    }
+
+    // Create boardSquares coordinates
+    const alphabet = []
+    for (let i = 65; i < 65+grid; i++) {
+      alphabet.push(String.fromCharCode(i))
+    }
+
+    let letterCordinate = 0;
+    let numberCoordinate = 1;
+    for (let i = 0;i < boardContainer.childElementCount; i++) {
+      boardContainer.children[i].setAttribute('id', `${alphabet[letterCordinate]}${numberCoordinate}`)
+      letterCordinate++
+      if (letterCordinate > grid-1) {
+        letterCordinate = 0;
+        numberCoordinate++;
+      }
+      boardContainer.children[i].textContent = boardContainer.children[i].getAttribute('id')
+      console.log(boardContainer.children[i].textContent)
     }
   
     document.querySelector('body').appendChild(boardContainer);
@@ -75,6 +88,8 @@ const newShip = shipFactory(["a1", "a2"], 5, ShipName.Destroyer)
 
 
 gameBoardFactory().createBoard(10)
+
+
 
 
 

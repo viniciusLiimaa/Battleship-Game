@@ -34,20 +34,34 @@ var shipFactory = function (position, length, name, isSunk) {
 };
 var gameBoardFactory = function () {
     var createBoard = function (grid) {
+        // Create board DOM
         var boardContainer = document.createElement('div');
         boardContainer.classList.add('grid-container');
         boardContainer.style.gridTemplateColumns = "repeat(".concat(grid, ", auto)");
-        var i = 0;
-        while (i < grid * grid) {
+        for (var i = 0; i < grid * grid; i++) {
             var boardSquare = document.createElement('div');
             boardSquare.classList.add('grid-child');
-            boardSquare.setAttribute('id', "".concat(i));
             boardContainer.appendChild(boardSquare);
             if ((i + 1) % grid == 0) {
                 boardSquare.style.backgroundColor = "red";
-                // Here needs to add the code to include the letters in the header
             }
-            i++;
+        }
+        // Create boardSquares coordinates
+        var alphabet = [];
+        for (var i = 65; i < 65 + grid; i++) {
+            alphabet.push(String.fromCharCode(i));
+        }
+        var letterCordinate = 0;
+        var numberCoordinate = 1;
+        for (var i = 0; i < boardContainer.childElementCount; i++) {
+            boardContainer.children[i].setAttribute('id', "".concat(alphabet[letterCordinate]).concat(numberCoordinate));
+            letterCordinate++;
+            if (letterCordinate > grid - 1) {
+                letterCordinate = 0;
+                numberCoordinate++;
+            }
+            boardContainer.children[i].textContent = boardContainer.children[i].getAttribute('id');
+            console.log(boardContainer.children[i].textContent);
         }
         document.querySelector('body').appendChild(boardContainer);
     };
