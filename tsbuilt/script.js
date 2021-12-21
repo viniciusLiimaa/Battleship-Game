@@ -6,12 +6,16 @@ var ShipName;
     ShipName["Submarine"] = "Submarine";
     ShipName["Destroyer"] = "Destroyer";
 })(ShipName || (ShipName = {}));
-var shipFactory = function (position, length, name, isSunk) {
+var shipStorage = (function () {
+    var shipList = [];
+    return { shipList: shipList };
+})();
+var shipFactory = function (position, name, isSunk) {
     if (isSunk === void 0) { isSunk = false; }
     var shipStatus = {
         position: position,
         name: name,
-        length: length,
+        length: position.length,
         hits: [],
         isSunk: isSunk
     };
@@ -42,9 +46,6 @@ var gameBoardFactory = function () {
             var boardSquare = document.createElement('div');
             boardSquare.classList.add('grid-child');
             boardContainer.appendChild(boardSquare);
-            if ((i + 1) % grid == 0) {
-                boardSquare.style.backgroundColor = "red";
-            }
         }
         // Create boardSquares coordinates
         var alphabet = [];
@@ -61,14 +62,26 @@ var gameBoardFactory = function () {
                 numberCoordinate++;
             }
             boardContainer.children[i].textContent = boardContainer.children[i].getAttribute('id');
-            console.log(boardContainer.children[i].textContent);
         }
         document.querySelector('body').appendChild(boardContainer);
     };
-    return { createBoard: createBoard };
+    var placeShip = function (position, name, isSunk) {
+        if (isSunk === void 0) { isSunk = false; }
+        var newShip = shipFactory(position, name);
+        shipStorage.shipList.push(newShip);
+        position.forEach(function (pos) {
+            document.getElementById(pos).setAttribute('data-has-ship', "true");
+            document.getElementById(pos).style.backgroundColor = ' #3333ff';
+        });
+    };
+    return { createBoard: createBoard, placeShip: placeShip };
 };
-var newShip = shipFactory(["a1", "a2"], 5, ShipName.Destroyer);
+var newShip = shipFactory(["a1", "a2"], ShipName.Destroyer);
 gameBoardFactory().createBoard(10);
+gameBoardFactory().placeShip(["A1", "A2", "A3"], ShipName.Destroyer);
+gameBoardFactory().placeShip(["J5", "J6", "J7", "J8", "J9"], ShipName.Cruiser);
+gameBoardFactory().placeShip(["D3", "E3", "F3"], ShipName.Carrier);
+console.log(shipStorage.shipList);
 module.exports = {
     shipFactory: shipFactory
 };

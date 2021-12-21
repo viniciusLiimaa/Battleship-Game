@@ -6,13 +6,23 @@ enum ShipName {
   Destroyer = 'Destroyer',
 }
 
+const shipStorage = (() => {
 
-const shipFactory = (position: Array<string>, length: number, name: ShipName, isSunk=false) => {
+  let shipList = []
+
+
+  return {shipList}
+
+})();
+
+
+
+const shipFactory = (position: Array<string>, name: ShipName, isSunk=false) => {
   
   const shipStatus = {
     position: position,
     name: name,
-    length: length,
+    length: position.length,
     hits: [],
     isSunk: isSunk
   }
@@ -33,6 +43,7 @@ const shipFactory = (position: Array<string>, length: number, name: ShipName, is
     }
   }
   
+
   return {shipStatus, getHit}
 
 };
@@ -41,6 +52,7 @@ const shipFactory = (position: Array<string>, length: number, name: ShipName, is
 const gameBoardFactory = () => {
 
   const createBoard = (grid: number) => {
+  
     // Create board DOM
     const boardContainer = document.createElement('div');
     boardContainer.classList.add('grid-container')
@@ -50,9 +62,6 @@ const gameBoardFactory = () => {
       let boardSquare = document.createElement('div');
       boardSquare.classList.add('grid-child')
       boardContainer.appendChild(boardSquare)
-      if ((i+1) % grid == 0) {
-        boardSquare.style.backgroundColor = "red"
-      }
     }
 
     // Create boardSquares coordinates
@@ -71,25 +80,40 @@ const gameBoardFactory = () => {
         numberCoordinate++;
       }
       boardContainer.children[i].textContent = boardContainer.children[i].getAttribute('id')
-      console.log(boardContainer.children[i].textContent)
+
     }
   
     document.querySelector('body').appendChild(boardContainer);
 
   }
 
-  return {createBoard}
 
+  const placeShip = (position: Array<string>, name: ShipName, isSunk=false ) => {
 
+    const newShip = shipFactory(position, name)
+    shipStorage.shipList.push(newShip)
+
+    position.forEach((pos) => {
+      document.getElementById(pos).setAttribute('data-has-ship', "true")
+      document.getElementById(pos).style.backgroundColor = ' #3333ff'
+    })
+   
+    
+  }
+
+  return {createBoard, placeShip}
 
 };
 
-const newShip = shipFactory(["a1", "a2"], 5, ShipName.Destroyer)
+const newShip = shipFactory(["a1", "a2"], ShipName.Destroyer)
 
 
 gameBoardFactory().createBoard(10)
+gameBoardFactory().placeShip(["A1", "A2", "A3"], ShipName.Destroyer)
+gameBoardFactory().placeShip(["J5", "J6", "J7", "J8", "J9"], ShipName.Cruiser)
+gameBoardFactory().placeShip(["D3", "E3", "F3"], ShipName.Carrier)
 
-
+console.log(shipStorage.shipList)
 
 
 
