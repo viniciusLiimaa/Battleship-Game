@@ -6,10 +6,7 @@ var ShipName;
     ShipName["Submarine"] = "Submarine";
     ShipName["Destroyer"] = "Destroyer";
 })(ShipName || (ShipName = {}));
-var shipStorage = (function () {
-    var shipList = [];
-    return { shipList: shipList };
-})();
+var gameBoard = {};
 var shipFactory = function (position, name, isSunk) {
     if (isSunk === void 0) { isSunk = false; }
     var shipStatus = {
@@ -61,6 +58,7 @@ var gameBoardFactory = function () {
                 letterCordinate = 0;
                 numberCoordinate++;
             }
+            gameBoard[boardContainer.children[i].getAttribute('id')] = false;
             boardContainer.children[i].textContent = boardContainer.children[i].getAttribute('id');
         }
         document.querySelector('body').appendChild(boardContainer);
@@ -68,20 +66,51 @@ var gameBoardFactory = function () {
     var placeShip = function (position, name, isSunk) {
         if (isSunk === void 0) { isSunk = false; }
         var newShip = shipFactory(position, name);
-        shipStorage.shipList.push(newShip);
         position.forEach(function (pos) {
             document.getElementById(pos).setAttribute('data-has-ship', "true");
-            document.getElementById(pos).style.backgroundColor = ' #3333ff';
+            document.getElementById(pos).style.backgroundColor = ' green';
         });
+        for (var i = 0; i < Object.keys(gameBoard).length; i++) {
+            if (position.includes(Object.keys(gameBoard)[i])) {
+                gameBoard[Object.keys(gameBoard)[i]] = newShip;
+            }
+        }
     };
-    return { createBoard: createBoard, placeShip: placeShip };
+    var receiveAttack = function (coordinate) {
+        if (gameBoard[coordinate]) {
+            gameBoard[coordinate].getHit(coordinate);
+            document.getElementById(coordinate).style.backgroundColor = 'red';
+            document.getElementById(coordinate).setAttribute('data-corret-hit', "true");
+            if (gameBoard[coordinate].shipStatus.isSunk) {
+                console.log("Your ship just got recked");
+            }
+        }
+        else {
+            if (document.getElementById(coordinate) != null) {
+                document.getElementById(coordinate).style.backgroundColor = 'black';
+                document.getElementById(coordinate).style.color = 'white';
+                document.getElementById(coordinate).setAttribute('data-corret-hit', "false");
+            }
+        }
+    };
+    // Continuar do 2.5
+    return { createBoard: createBoard, placeShip: placeShip, receiveAttack: receiveAttack };
 };
-var newShip = shipFactory(["a1", "a2"], ShipName.Destroyer);
 gameBoardFactory().createBoard(10);
 gameBoardFactory().placeShip(["A1", "A2", "A3"], ShipName.Destroyer);
 gameBoardFactory().placeShip(["J5", "J6", "J7", "J8", "J9"], ShipName.Cruiser);
 gameBoardFactory().placeShip(["D3", "E3", "F3"], ShipName.Carrier);
-console.log(shipStorage.shipList);
+gameBoardFactory().receiveAttack("D3");
+gameBoardFactory().receiveAttack("E3");
+gameBoardFactory().receiveAttack("J10");
+/*
+
+Color legend:
+1) Green - Coordinate where a ship has been placed
+2) Red - Coordinate that had a ship and received a hit
+3) Black - Coordinate that didn't have a ship and received a hit
+
+*/
 module.exports = {
     shipFactory: shipFactory
 };
