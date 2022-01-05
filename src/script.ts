@@ -135,6 +135,7 @@ gameBoardFactory().placeShip(["J5", "J6", "J7", "J8", "J9"], ShipName.Cruiser)
 gameBoardFactory().placeShip(["D3", "E3", "F3"], ShipName.Carrier)
 gameBoardFactory().receiveAttack("D3")
 gameBoardFactory().receiveAttack("E3")
+gameBoardFactory().receiveAttack("F3")
 gameBoardFactory().receiveAttack("J10")
 
 
